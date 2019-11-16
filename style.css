@@ -1,4 +1,7 @@
 
+table{
+    border-collapse: collapse;
+}
 td {
     padding: 0;
     width: 40px;
@@ -9,13 +12,88 @@ td {
     text-align: center;
     font-size: 120%;
     font-family: sans-serif;
+
 }
 header {
-    margin-bottom: 150px;
+    margin-bottom: 50px;
     width: 80%;
 }
 p {
     text-align: center;
     font-size: 12px;
     font-style: italic;
+    margin-top: 100px;
+}
+
+[class="1"]{
+    background-color: red;
+}
+[class="-1"] {
+    background-color: red;
+}
+[class="2"]{
+    background-color: green;
+}
+[class="-2"] {
+    background-color: green;
+}
+[class="3"]{
+    background-color: rgb(43, 43, 255);
+}
+[class="-3"] {
+    background-color: rgb(43, 43, 255);
+}
+[class="4"]{
+    background-color: yellow;
+}
+[class="-4"] {
+    background-color: yellow;
+}
+[class="5"]{
+    background-color: magenta;
+}
+[class="-5"] {
+    background-color: magenta;
+}
+[class="6"]{
+    background-color: purple;
+}
+[class="-6"] {
+    background-color: purple;
+}
+[class="7"]{
+    background-color: brown;
+}
+[class="-7"] {
+    background-color: brown;
+}
+[class="8"]{
+    background-color: lightseagreen;
+}
+[class="8"] {
+    background-color: lightseagreen;
+}
+[class="9"] {
+    background-color: rgb(2, 2, 172);
+}
+[class="-9"] {
+    background-color: rgb(2, 2, 172);
+}
+[class="10"]{
+    background-color: darkolivegreen;
+}
+[class="-10"] {
+    background-color: darkolivegreen;
+}
+[class="11"]{
+    background-color: orange;
+}
+[class="-11"] {
+    background-color: orange;
+}
+[class="11"]{
+    background-color: rgb(37, 21, 80);
+}
+[class="-12"] {
+    background-color: rgb(37, 21, 80);
 }
