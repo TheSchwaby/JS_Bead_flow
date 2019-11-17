@@ -35,6 +35,7 @@ const hardTable = [
 var currentID = -1;
 var mouseIsDown = false;
 var previousCell = null;
+var firstCell = null;
 var selectedTable = null;
 
 //level selection event handlers
@@ -44,7 +45,6 @@ function selectEasy(e) {
   }
   drowTable(easyTable);
   selectedTable = 'easy';
-  save();
 }
 
 function selectMedium(e) {
@@ -53,7 +53,6 @@ function selectMedium(e) {
   }
   drowTable(mediumTable);
   selectedTable = 'medium';
-  save();
 }
 
 function selectHard(e) {
@@ -62,38 +61,41 @@ function selectHard(e) {
   }
   drowTable(hardTable);
   selectedTable = 'hard';
-  save();
 }
 
 function loadEasy() {
   clearTable();
   var toDrowTMP = sessionStorage.getItem("easy")
-  toDrow = JSON.parse(toDrowTMP)
+  toDrow = JSON.parse(toDrowTMP);
+  console.log(toDrow);
   if (toDrow === null) {
     drowTable(easyTable);
   } else {
     drowTable(toDrow);
   }
+  selectedTable = 'easy';
 }
 function loadMedium() {
   clearTable();
   var toDrowTMP = sessionStorage.getItem("medium")
-  toDrow = JSON.parse(toDrowTMP)
+  toDrow = JSON.parse(toDrowTMP);
   if (toDrow === null) {
     drowTable(mediumTable);
   } else {
     drowTable(toDrow);
   }
+  selectedTable = 'medium';
 }
 function loadHard() {
   clearTable();
   var toDrowTMP = sessionStorage.getItem("hard")
-  toDrow = JSON.parse(toDrowTMP)
+  toDrow = JSON.parse(toDrowTMP);
   if (toDrow === null) {
     drowTable(hardTable);
   } else {
     drowTable(toDrow);
   }
+  selectedTable = 'hard';
 }
 
 
@@ -103,16 +105,33 @@ function save() {
   var cellID;
   table = document.querySelector('table');
 
-  for (i = 0; i < table.rows.length; i++) {
-    var arr = new Array;
-    for (j = 0; j < table.rows[i].cells.length; j++) {
-      cellID = parseInt(table.rows[i].cells[j].getAttribute('class'))
-      arr.push(cellID)
+  if (sessionStorage.getItem(selectedTable) !== null) {
+    if (window.confirm("Már van mentett állás az adott pályára.\nFelülírja?")) {
+
+      for (i = 0; i < table.rows.length; i++) {
+        var arr = new Array;
+        for (j = 0; j < table.rows[i].cells.length; j++) {
+          cellID = parseInt(table.rows[i].cells[j].getAttribute('class'))
+          arr.push(cellID)
+        }
+        tableSaved.push(arr);
+      }
+      saved = JSON.stringify(tableSaved);
+      sessionStorage.setItem(selectedTable, saved);
     }
-    tableSaved.push(arr);
+  } else {
+    for (i = 0; i < table.rows.length; i++) {
+      var arr = new Array;
+      for (j = 0; j < table.rows[i].cells.length; j++) {
+        cellID = parseInt(table.rows[i].cells[j].getAttribute('class'))
+        arr.push(cellID)
+      }
+      tableSaved.push(arr);
+    }
+    saved = JSON.stringify(tableSaved);
+    sessionStorage.setItem(selectedTable, saved);
   }
-  saved = JSON.stringify(tableSaved);
-  sessionStorage.setItem(selectedTable, saved)
+
 }
 
 
@@ -121,7 +140,7 @@ function mouseDown(e) {
   id = parseInt(this.getAttribute('class'));
   if (id < 0) return;
   currentID = id;
-
+  firstCell = this;
   mouseIsDown = true;
   event.preventDefault();
 }
@@ -140,9 +159,8 @@ function mouseUp(e) {
 
 function mouseOut(e) {
   previousCell = event.relatedTarget;
-
   if (!mouseIsDown) return;
-  if (isNeighbour(previousCell)) {
+  if (isLegalMove(previousCell, this)) {
     if (parseInt(this.getAttribute('class')) === 0) {
       this.setAttribute('class', 0 - currentID);
     } else {
@@ -166,7 +184,8 @@ function mouseRight(e) {
 
 //removeing color on backtrack
 function backtrack(target) {
-  if (parseInt(target.getAttribute('class')) === 0 - currentID && parseInt(previousCell.getAttribute('class')) === 0 - currentID) {
+  if (parseInt(target.getAttribute('class')) === 0 - currentID &&
+      parseInt(previousCell.getAttribute('class')) === 0 - currentID || target === firstCell) {
     previousCell.setAttribute('class', 0)
   }
 }
@@ -198,20 +217,14 @@ function checkWin() {
 }
 
 //Checking if the route is legal
-function isNeighbour(from) {
-  //cheks if the last cell is part of the line.
-  if (parseInt(from.getAttribute('class')) === currentID || parseInt(from.getAttribute('class')) === 0 - currentID) {
-    //check if last cell is nex to the current cell
-    table = document.querySelector('table');
-    for (let row of table.rows) {
-      for (let cell of row.cells) {
-
-      }
-    }
-    return true;
-  } else {
-    return false;
-  }
+function isLegalMove(from, to) {
+  i = from.cellIndex;
+  j = from.parentElement.rowIndex;
+  k = to.cellIndex;
+  l = to.parentElement.rowIndex;
+  return (parseInt(from.getAttribute('class')) === currentID ||
+    parseInt(from.getAttribute('class')) === 0 - currentID) &&
+    Math.abs(i - k) + Math.abs(j - l) <= 1
 }
 
 function drowTable(tableToDraw) {
@@ -240,6 +253,7 @@ function drowTable(tableToDraw) {
   button = document.createElement('button');
   button.setAttribute('class', 'save');
   button.addEventListener('click', save);
+  button.innerHTML = "Mentés"
   document.querySelector('#game').appendChild(button);
 }
 
