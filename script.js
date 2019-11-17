@@ -42,68 +42,78 @@ function selectEasy(e) {
   if (selectedTable !== null) {
     clearTable();
   }
-  drowTableFromSession(easyTable);
+  drowTable(easyTable);
   selectedTable = 'easy';
-  savealt();
+  save();
 }
 
 function selectMedium(e) {
   if (selectedTable !== null) {
     clearTable();
   }
-  drowTableFromSession(mediumTable);
+  drowTable(mediumTable);
   selectedTable = 'medium';
-  savealt();
+  save();
 }
 
 function selectHard(e) {
   if (selectedTable !== null) {
     clearTable();
   }
-  drowTableFromSession(hardTable);
+  drowTable(hardTable);
   selectedTable = 'hard';
-  savealt();
+  save();
 }
 
-function loadEasy(){
+function loadEasy() {
   clearTable();
   var toDrowTMP = sessionStorage.getItem("easy")
-  toDrow= JSON.parse(toDrowTMP)
-  drowTableFromSession(toDrow);
+  toDrow = JSON.parse(toDrowTMP)
+  if (toDrow === null) {
+    drowTable(easyTable);
+  } else {
+    drowTable(toDrow);
+  }
 }
-function loadMedium(){
+function loadMedium() {
   clearTable();
   var toDrowTMP = sessionStorage.getItem("medium")
-  toDrow= JSON.parse(toDrowTMP)
-  drowTableFromSession(toDrow);
+  toDrow = JSON.parse(toDrowTMP)
+  if (toDrow === null) {
+    drowTable(mediumTable);
+  } else {
+    drowTable(toDrow);
+  }
 }
-function loadHard(){
+function loadHard() {
   clearTable();
   var toDrowTMP = sessionStorage.getItem("hard")
-  toDrow= JSON.parse(toDrowTMP)
-  drowTableFromSession(toDrow);
+  toDrow = JSON.parse(toDrowTMP)
+  if (toDrow === null) {
+    drowTable(hardTable);
+  } else {
+    drowTable(toDrow);
+  }
 }
 
 
-function savealt(){
+
+function save() {
   var tableSaved = new Array;
   var cellID;
   table = document.querySelector('table');
 
-  for (i= 0; i < table.rows.length; i++) {
+  for (i = 0; i < table.rows.length; i++) {
     var arr = new Array;
-    for (j= 0; j < table.rows[i].cells.length; j++) {
+    for (j = 0; j < table.rows[i].cells.length; j++) {
       cellID = parseInt(table.rows[i].cells[j].getAttribute('class'))
       arr.push(cellID)
-     // tableSaved[i][j] = cellID;
     }
     tableSaved.push(arr);
   }
   saved = JSON.stringify(tableSaved);
   sessionStorage.setItem(selectedTable, saved)
-} 
-
-
+}
 
 
 //mouse event handlers
@@ -139,7 +149,6 @@ function mouseOut(e) {
       backtrack(this);
     }
   }
-
   event.preventDefault();
 }
 
@@ -151,7 +160,6 @@ function mouseRight(e) {
     clearLine(2 * toRemove);
   }
   event.preventDefault();
-
 }
 
 //functions
@@ -197,7 +205,7 @@ function isNeighbour(from) {
     table = document.querySelector('table');
     for (let row of table.rows) {
       for (let cell of row.cells) {
-        //------------------------------
+
       }
     }
     return true;
@@ -206,15 +214,16 @@ function isNeighbour(from) {
   }
 }
 
-function drowTableFromSession(tableToDraw){
+function drowTable(tableToDraw) {
 
   var table = document.createElement('table');
-  for( i = 0; i < tableToDraw.length; i++ ){
+  for (i = 0; i < tableToDraw.length; i++) {
     var row = document.createElement('tr');
     var rowData = tableToDraw[i];
-    for( j = 0; j < rowData.length; j++ ){
+    for (j = 0; j < rowData.length; j++) {
       var cell = document.createElement('td');
       cell.appendChild(document.createTextNode(''));
+      //adding event listeners
       cell.addEventListener('mousedown', mouseDown, false);
       cell.addEventListener('mouseup', mouseUp, false);
       cell.addEventListener('mouseover', mouseOut, false);
@@ -230,19 +239,21 @@ function drowTableFromSession(tableToDraw){
   //creating Save button
   button = document.createElement('button');
   button.setAttribute('class', 'save');
-  button.addEventListener('click', savealt);
+  button.addEventListener('click', save);
   document.querySelector('#game').appendChild(button);
 }
 
-
+//clearing table
 function clearTable() {
   document.querySelector('#game').innerHTML = '';
 }
 
 //init
 window.onload = function () {
-  //adding event listeners for menu items
+  //clearing session storage for easy testing. 
+  //If game would ment to be an actual game, localStorage would been used insted, and no cleanup on start
   sessionStorage.clear();
+  //adding event listeners for menu items
   document.querySelector("#easy").addEventListener("click", selectEasy);
   document.querySelector('#medium').addEventListener('click', selectMedium);
   document.querySelector('#hard').addEventListener('click', selectHard);
